@@ -7,3 +7,6 @@ env/*
 
 #ignore migrations
 app/migrations/*
+
+# ignore DB
+db.sqlite3
