@@ -11,3 +11,4 @@ class Position(models.Model):
 
     class Model:
         ordening = ['time']
+        unique_together = (('user', 'longitude', 'latitude', 'time'),)

@@ -1,16 +1,19 @@
 from api.serializers import PositionSerializer
 from django.http import Http404
 from rest_framework.views import APIView
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
 #from rest_framework.parsers import JSONParser
 
+from django.utils.datastructures import MultiValueDictKeyError
+
 from tracker.models import User, Position
 
 
-class PositionManager(APIView):
+class UserPositionManager(APIView):
     """
-    Manage incoming request and save to DB
+    Manage incoming (GET, POST) requests and save to DB
     """
 
     def get(self, request):
@@ -24,12 +27,16 @@ class PositionManager(APIView):
 
     def post(self, request):
         """
-        Add position of a user to the DB
+        Add position of a user to DB
         """
-        import pdb; pdb.set_trace()
-        user =  User.objects.filter(pk=request.data['user'])
-        if not user.exists():
-            User.objects.create(user_id=request.data['user'])
+        #import pdb; pdb.set_trace()
+        try:
+
+            if not User.exists(request.data['user']):
+                raise User.DoesNotExist
+
+        except MultiValueDictKeyError:
+            raise Exception("Required field: user")
 
         serializer = PositionSerializer(data=request.data)
 
@@ -37,3 +44,31 @@ class PositionManager(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserPositionDetails(APIView):
+    """
+    Show position of a user
+    """
+
+    def get_last_position(self, user_id):
+        positions = Position.objects.filter(user_id=user_id)
+        if positions.exists():
+            return positions[len(positions)-1]
+        return None
+
+    def get(self, request, pk):
+        position = self.get_last_position(pk)
+        if position:
+            serializer = PositionSerializer(position)
+            return Response(serializer.data)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+class GroupPositionManager(APIView):
+    pass
+
+class GroupPositionDetails(APIView):
+    """
+    Return position of a group
+    """
+
