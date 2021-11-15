@@ -23,7 +23,7 @@ class UserManager(APIView):
         try:
             user = User.objects.get(pk = request.data['user_id'])
             serializer = UserSerializer(user, data = request.data)
-        
+
         except User.DoesNotExist:
             serializer = UserSerializer(data=request.data)
 

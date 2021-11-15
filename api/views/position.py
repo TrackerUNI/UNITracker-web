@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import ErrorDetail
 #from rest_framework.parsers import JSONParser
 
 from django.utils.datastructures import MultiValueDictKeyError
@@ -29,14 +30,20 @@ class UserPositionManager(APIView):
         """
         Add position of a user to DB
         """
-        #import pdb; pdb.set_trace()
         try:
-
             if not User.exists(request.data['user']):
-                raise User.DoesNotExist
+                pk = request.data['user']
+                error = {
+                    'user': ErrorDetail(string=f"Invalid pk '{pk}' - object does not exist",
+                                        code='does_not_exist')
+                }
+                return Response(error, status=status.HTTP_404_NOT_FOUND)
 
         except MultiValueDictKeyError:
-            raise Exception("Required field: user")
+            error = {
+                'user': ErrorDetail(string="This field is required", code='required')
+            }
+            return Response(error, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = PositionSerializer(data=request.data)
 
@@ -64,11 +71,12 @@ class UserPositionDetails(APIView):
             return Response(serializer.data)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-class GroupPositionManager(APIView):
-    pass
 
 class GroupPositionDetails(APIView):
     """
     Return position of a group
     """
+
+    def get(self, request):
+        return Response(status=status.HTTP_510_NOT_IMPLEMENTED)
 

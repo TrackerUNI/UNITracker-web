@@ -5,7 +5,6 @@ from api.views import (
     UserPositionDetails,
     UserPositionManager,
     GroupPositionDetails,
-    GroupPositionManager,
     UserDetails,
     UserManager,
     GroupDetails,
@@ -14,10 +13,9 @@ from api.views import (
 )
 
 urlpatterns = [
-    path('position/', UserPositionManager.as_view()), #OK
-    path('position/<slug:pk>/', UserPositionDetails.as_view()), #OK
-    #path('position/group/', GroupPositionManager.as_view()),
-    path('position/group/<slug:pk>/', GroupPositionDetails.as_view()),
+    path('position/', UserPositionManager.as_view()), #OK, TESTED
+    path('position/<slug:pk>/', UserPositionDetails.as_view()), #OK, TESTED
+    path('position/group/<slug:pk>/', GroupPositionDetails.as_view()), # NOT IMPLEMENTED
     path('user/', UserManager.as_view()), #OK
     path('user/<slug:pk>/', UserDetails.as_view()), #OK
     path('group/', GroupManager.as_view()), #OK
