@@ -14,7 +14,7 @@ class TestUserPositionManagerView(TestCase):
     def setUp(self):
         self.client = Client()
 
-    def test_missed_user_post_request(self):
+    def test_missed_user(self):
         data = {
             # missed user parameter
             'longitude': 30.2,
