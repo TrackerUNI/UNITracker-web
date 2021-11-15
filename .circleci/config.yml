@@ -17,4 +17,8 @@ jobs:
 workflows:
   unitracker: 
     jobs:
-      - tests
+      - tests:
+        filters:
+          branches:
+            only:
+              - main
