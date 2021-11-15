@@ -12,9 +12,10 @@ jobs:
           command: |
             python3 -m pip install --upgrade pip
             python3 -m pip install -r requirements.txt
-            python3 -m pip install coverage
-            coverage run manage.py test -v 3
-            coverage report -m
+            #python3 -m pip install coverage
+            #coverage run manage.py test -v 3
+            #coverage report -m
+            python3 manage.py test -v 3
 
 
 
