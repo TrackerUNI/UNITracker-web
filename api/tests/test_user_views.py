@@ -9,7 +9,7 @@ from  random import randint
 
 from tracker.models import User, Position, Group
 
-class TestUserManager(TestCase):
+class TestUserManagerView(TestCase):
     def setUp(self):
         self.client = Client()
 
@@ -47,7 +47,7 @@ class TestUserManager(TestCase):
 
     def test_bad_request(self):
 
-        pk = '00000C'
+        pk = '000001C'
         data = {
             'usr_id': pk, # typo: usr_id -> user_id
             'name': f'user-{pk}'
@@ -55,3 +55,29 @@ class TestUserManager(TestCase):
 
         r = self.client.post('/api/user/', data=data)
         self.assertEqual(r.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class TestUserDetailsView(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_user_not_exist(self):
+        pk = '000001D' # user does not exist
+
+        r = self.client.get(f'/api/user/{pk}/')
+
+        self.assertEqual(r.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_user_details(self):
+
+        pk = "000001E"
+        user_data = {
+            'user_id': pk,
+            'name': 'Juana'
+        }
+
+        User.objects.create(**user_data)
+        user = self.client.get(f'/api/user/{pk}/')
+
+        self.assertEqual(user.status_code, status.HTTP_200_OK)
+        self.assertEqual(user.data, user_data)

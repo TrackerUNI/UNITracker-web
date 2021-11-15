@@ -4,6 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 #from rest_framework.parsers import JSONParser
+
+from rest_framework.exceptions import ErrorDetail
 from django.utils.datastructures import MultiValueDictKeyError
 
 
@@ -23,15 +25,26 @@ class GroupManager(APIView):
 
     def post(self, request):
         #import pdb; pdb.set_trace()
+        new_group = False
         try:
             group = Group.objects.get(pk = request.data['group_id'])
             serializer = GroupSerializer(group, data = request.data)
 
+        except MultiValueDictKeyError:
+            error = {
+                'group_id': ErrorDetail(string="This field is required",
+                                        code='required')
+            }
+            return Response(error, status=status.HTTP_400_BAD_REQUEST)
+
         except Group.DoesNotExist:
             serializer = GroupSerializer(data=request.data)
+            new_group = True
 
         if serializer.is_valid():
             serializer.save()
+            if new_group:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -85,7 +98,15 @@ class GroupMembers(APIView):
             return Response(status=status.HTTP_201_CREATED)
 
         except Group.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            error = {
+                'group': ErrorDetail(string=f"Invalid pk '{pk}' - group does not exist",
+                                     code='does_not_exist')
+            }
+            return Response(error, status=status.HTTP_404_NOT_FOUND)
 
         except MultiValueDictKeyError:
-            raise Exception("Required field: users")
+            error = {
+                'users': ErrorDetail(string="This field is required",
+                                       code='required')
+            }
+            return Response(error, status=status.HTTP_400_BAD_REQUEST)
