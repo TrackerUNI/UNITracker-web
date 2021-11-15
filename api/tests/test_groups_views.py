@@ -131,28 +131,6 @@ class TestGroupMembersView(TestCase):
         self.assertEqual(r.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(r.data, expected)
 
-    def test_missed_users_parameter(self):
-        ## creating group
-        pk = "G000001Z"
-        data = {
-            'group_id': pk, # group does not exist
-            'name': f'group-{pk}',
-        }
-
-        r = self.client.post('/api/group/', data=data)
-        self.assertEqual(r.status_code, status.HTTP_201_CREATED)
-
-        ## adding member (but forgot pass users parameter)
-        r = self.client.post(f'/api/group/{pk}/members/', data={})
-
-        expected = {
-            'users': ErrorDetail(string="This field is required",
-                                 code='required')
-        }
-
-        self.assertEqual(r.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(r.data, expected)
-
 
     def test_add_users2group(self):
         group_pk = "G000001G"

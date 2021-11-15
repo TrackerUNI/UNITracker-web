@@ -89,7 +89,6 @@ class GroupMembers(APIView):
         """
         Add a members to a group
         """
-        #import pdb; pdb.set_trace()
         try:
             users = User.objects.filter(user_id__in=request.data.getlist('users'))
             group = Group.objects.get(pk = pk)
@@ -103,10 +102,3 @@ class GroupMembers(APIView):
                                      code='does_not_exist')
             }
             return Response(error, status=status.HTTP_404_NOT_FOUND)
-
-        except MultiValueDictKeyError:
-            error = {
-                'users': ErrorDetail(string="This field is required",
-                                       code='required')
-            }
-            return Response(error, status=status.HTTP_400_BAD_REQUEST)
