@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'tracker.apps.TrackerConfig',
     'api.apps.ApiConfig',
-    'accounts.apps.AccountsConfig',
+    #'accounts.apps.AccountsConfig',
 
 ]
 
